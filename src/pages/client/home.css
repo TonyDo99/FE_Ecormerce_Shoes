@@ -1,0 +1,20 @@
+.border-input:focus {
+  border-bottom: 1px solid gray;
+  transition: all 2s ease-out;
+}
+
+.gg-block > div {
+  display: "none" !important;
+  background-color: "none" !important;
+  align-items: "none" !important;
+  color: "none" !important;
+  font-family: "none" !important;
+  box-shadow: "none" !important;
+  border-radius: "none" !important;
+  border: "none" !important;
+  font-size: "none" !important;
+  font-weight: "none" !important;
+  padding: "none" !important;
+}
+
+
