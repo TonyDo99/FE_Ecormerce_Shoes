@@ -39,10 +39,32 @@ export const uploadProduct = async (formData) => {
   }
 };
 
-export const createCoupon = async (formData) => {
-  const { data } = await axios.post(`${host}/admin/coupon/create`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+// Coupon API
+/**
+ * @param { FormData } formData - FormData object
+ * @return { PromiseLike<Object> } { status, message } - Response from BE
+ */
 
-  return data;
+export const createCoupon = async (formData) => {
+  try {
+    const { data } = await axios.post(`${host}/admin/coupon/create`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  } catch (error) {
+    console.log(`%c ${error}`, "color: red");
+  }
+};
+
+/**
+ * @return { Promise<Object> } - { status, message, coupons: {} }
+ */
+
+export const getCoupon = async () => {
+  try {
+    let { data } = await axios.get(`${host}/admin/coupon/all`);
+    return data;
+  } catch (error) {
+    console.log(`%c ${error}`, "color: red");
+  }
 };
