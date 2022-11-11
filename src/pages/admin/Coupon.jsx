@@ -1,16 +1,23 @@
 import { useFormik } from "formik";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Hypnosis, Spin } from "react-cssfx-loading/lib";
 import { storage } from "../../firebase/initializeApp";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import * as Yup from "yup";
 import { UpSearch } from "./Customers";
-import { createCoupon, getCoupon } from "../../api/adminAPI";
+import { ModalPayment } from "../../components/Modal";
+import {
+  createCoupon,
+  getCoupon,
+  getDetailCoupon,
+  updateCoupon,
+  deleteCoupon,
+} from "../../api/adminAPI";
 import newIcon from "../../img/new.png";
 import popularIcon from "../../img/popular.png";
 import saleIcon from "../../img/sale.png";
-import { ModalPayment } from "../../components/Modal";
 
 function InsertCoupon() {
   let [now, setNow] = useState(new Date());
@@ -402,11 +409,29 @@ function InsertCoupon() {
   );
 }
 
-function UpdateCoupon() {
+function UpdateCoupon(props) {
   let [now, setNow] = useState(new Date());
   let [select, setSelect] = useState(false);
   let [loading, setLoading] = useState(false);
   let [showModal, setShowModal] = useState(undefined);
+  let [coupon, setCoupon] = useState({});
+
+  const {
+    match: {
+      params: { _code },
+    },
+  } = props;
+
+  useEffect(() => {
+    (async () => {
+      let { data } = await getDetailCoupon(_code);
+      setCoupon(data);
+    })();
+    setInterval(() => {
+      setNow(new Date());
+    }, 1000);
+  }, [_code]);
+
   let ls_status = [
     {
       icon: popularIcon,
@@ -469,22 +494,22 @@ function UpdateCoupon() {
       color: "text-[#175235]",
     },
   ];
-  const initialValues = {
-    code: Math.round(Math.random() * 1000000),
-    type: "FREE",
-    shipping_discount: "",
-    percent_discount: 100,
-    logo: "",
-  };
 
-  let validationSchema = Yup.object().shape({
-    shipping_discount: Yup.number().required("Code field can't be blank *"),
-    logo: Yup.mixed().required("Please select your logo of coupon *"),
-  });
+  // let validationSchema = Yup.object().shape({
+  //   shipping_discount: Yup.number().required("Code field can't be blank *"),
+  //   logo: Yup.mixed().required("Please select your logo of coupon *"),
+  // });
+
+  const initialValues = {
+    code: coupon.code,
+    type: coupon.type,
+    shipping_discount: coupon.shipping_discount,
+    percent_discount: coupon.percent_discount,
+    logo: coupon.logo,
+  };
 
   const formik = useFormik({
     initialValues,
-
     // POST HTTP lên cho server;
     onSubmit: async (values) => {
       setLoading(true);
@@ -495,32 +520,26 @@ function UpdateCoupon() {
         await uploadBytes(storageRef, values.logo).then(() => {
           console.log("Upload logo success !");
         });
-
+        console.log(coupon);
         let url_path = await getDownloadURL(ref(storage, values.logo.name));
         formData.append("logo", url_path);
-        formData.append("code", values.code);
-        formData.append("type", values.type);
-        formData.append("shipping_discount", values.shipping_discount);
-        formData.append("percent_discount", values.percent_discount);
-
-        let { status } = await createCoupon(formData);
+        formData.append("type", coupon.type);
+        formData.append("shipping_discount", coupon.shipping_discount);
+        formData.append("percent_discount", coupon.percent_discount);
+        let { status } = await updateCoupon(formData, _code);
         setShowModal(status);
         setLoading(false);
       } catch (err) {
         console.log(`%c ${err}`, "color: red");
       }
     },
-    validationSchema,
+    // validationSchema,
   });
 
-  setInterval(() => {
-    setNow(new Date());
-  }, 1000);
-
   // Change select type in formdata
-  const selected = (formik, item) => {
-    formik.values.type = item.type;
-    formik.values.percent_discount = item.percent_discount;
+  const selected = (coupon, item) => {
+    coupon.type = item.type;
+    coupon.percent_discount = item.percent_discount;
     setSelect(!select);
   };
 
@@ -607,7 +626,7 @@ function UpdateCoupon() {
                         autoComplete="code"
                         className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                         disabled={true}
-                        value={formik.values.code}
+                        value={coupon.code}
                       />
                       {formik.touched.code && formik.errors.code ? (
                         <p className="animate-pulse text-[#f2566e] text-sm md:text-base">
@@ -634,12 +653,12 @@ function UpdateCoupon() {
                         >
                           <span className="flex items-center">
                             <img
-                              src={formik.values.src}
+                              src={ls_status[0].icon}
                               alt=""
                               className="flex-shrink-0 h-6 w-6 rounded-full"
                             />
                             <span className="text-[#b8f5d7] font-semibold ml-3 block truncate">
-                              {formik.values.type}
+                              {coupon.type}
                             </span>
                           </span>
                           <span className="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
@@ -678,7 +697,7 @@ function UpdateCoupon() {
                                 id="listbox-option-0"
                                 aria-selected="true"
                                 role="option"
-                                onClick={() => selected(formik, item)}
+                                onClick={() => selected(coupon, item)}
                               >
                                 <div className="flex items-center">
                                   <img
@@ -728,15 +747,17 @@ function UpdateCoupon() {
                         id="shipping_discount"
                         autoComplete="shipping_discount"
                         className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                        onChange={formik.handleChange}
-                        value={formik.values.shipping_discount}
+                        onChange={(e) =>
+                          setCoupon({ shipping_discount: e.target.value })
+                        }
+                        value={coupon.shipping_discount}
                       />
-                      {formik.touched.shipping_discount &&
+                      {/* {formik.touched.shipping_discount &&
                       formik.errors.shipping_discount ? (
                         <p className="animate-pulse text-[#f2566e] text-sm md:text-base">
                           {formik.errors.shipping_discount}
                         </p>
-                      ) : null}
+                      ) : null} */}
                     </div>
 
                     <div className="col-span-6 sm:col-span-3">
@@ -754,7 +775,7 @@ function UpdateCoupon() {
                         className="mt-1 transition-colors duration-500  focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                         disabled={true}
                         onChange={formik.handleChange}
-                        value={formik.values.percent_discount}
+                        value={coupon.percent_discount}
                       />
                       {formik.touched.percent_discount &&
                       formik.errors.percent_discount ? (
@@ -764,22 +785,41 @@ function UpdateCoupon() {
                       ) : null}
                     </div>
                   </div>
-                  <div className=" py-5 text-right">
-                    {loading ? (
-                      <button className="inline-flex items-center justify-center py-1 px-4 sm:py-3 sm:px-3 border-2 hover:border-opacity-60 rounded-md shadow-all-rounded transition-colors duration-500 hover:border-[#5048e5] cursor-pointer">
-                        <Spin color="#5048e5" width="20px" height="20px" />
-                        <span className="text-center font-Inter font-semibold text-[#5048e5] ml-3">
-                          Processing...
-                        </span>
-                      </button>
-                    ) : (
-                      <button
-                        type="submit"
-                        className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                      >
-                        Upload
-                      </button>
-                    )}
+                  <div className="py-5 flex justify-between items-center">
+                    <div>
+                      {loading ? (
+                        <button className="inline-flex items-center justify-center py-1 px-4 sm:py-3 sm:px-3 border-2 hover:border-opacity-60 rounded-md shadow-all-rounded transition-colors duration-500 hover:border-[#5048e5] cursor-pointer">
+                          <Spin color="#5048e5" width="20px" height="20px" />
+                          <span className="text-center font-Inter font-semibold text-[#5048e5] ml-3">
+                            Processing...
+                          </span>
+                        </button>
+                      ) : (
+                        <button
+                          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          onClick={() => deleteCoupon(_code, setShowModal)}
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </div>
+                    <div>
+                      {loading ? (
+                        <button className="inline-flex items-center justify-center py-1 px-4 sm:py-3 sm:px-3 border-2 hover:border-opacity-60 rounded-md shadow-all-rounded transition-colors duration-500 hover:border-[#5048e5] cursor-pointer">
+                          <Spin color="#5048e5" width="20px" height="20px" />
+                          <span className="text-center font-Inter font-semibold text-[#5048e5] ml-3">
+                            Processing...
+                          </span>
+                        </button>
+                      ) : (
+                        <button
+                          type="submit"
+                          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                          Upload
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -826,7 +866,8 @@ function CouponSite() {
                 : search === ""
             )
             .map((item, index) => (
-              <div
+              <Link
+                to={`/dashboard/coupon/${item.code}`}
                 key={index}
                 className="grid grid-cols-3 w-full h-max rounded-lg shadow-all-rounded sm:text-sm cursor-pointer transition duration-500 hover:-translate-y-3"
               >
@@ -860,7 +901,7 @@ function CouponSite() {
                     />
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
         </div>
       )}

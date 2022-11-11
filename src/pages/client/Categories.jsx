@@ -500,8 +500,6 @@ function Main() {
   );
 }
 
-export let CountContext = React.createContext;
-
 export function Categories() {
   // Set Authorization for Header Categories
   const tokenHeader = localStorage.getItem("token");

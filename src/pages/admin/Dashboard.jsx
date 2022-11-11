@@ -23,7 +23,7 @@ import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
 import { InsertProduct, ProductsSite } from "./Products";
 import { CustomersSite } from "./Customers";
 import { AccountSite } from "./Account";
-import { CouponSite, InsertCoupon } from "./Coupon";
+import { CouponSite, InsertCoupon, UpdateCoupon } from "./Coupon";
 import { fetchUser } from "../../api/adminAPI";
 
 import { dashboard } from "../../socket.io/config";
@@ -522,6 +522,10 @@ function AdminArticle({ account }) {
           exact
           path="/dashboard/products/insert"
           component={InsertProduct}
+        />
+        <Route
+          path="/dashboard/coupon/:_code"
+          render={(props) => <UpdateCoupon {...props} />}
         />
       </Switch>
     </div>

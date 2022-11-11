@@ -74,6 +74,7 @@ function DetailProduct(props) {
   const {
     match: { params },
   } = props;
+
   const { _id } = params;
 
   useEffect(() => {
@@ -85,6 +86,7 @@ function DetailProduct(props) {
         console.log(`%c ${err}`, "color: red");
       });
   }, [_id]);
+
   return (
     <>
       <div className="pt-6">

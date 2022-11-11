@@ -68,3 +68,50 @@ export const getCoupon = async () => {
     console.log(`%c ${error}`, "color: red");
   }
 };
+
+/**
+ * @type { number }
+ * @param { code }
+ *
+ * @type {  }
+ * @returns { }
+ */
+
+export const getDetailCoupon = async (code) => {
+  try {
+    let { data } = await axios.get(`${host}/admin/coupon/${code}`);
+    return data;
+  } catch (error) {
+    console.log(`%c ${error}`, "color: red");
+  }
+};
+
+/**
+ * @param { FormData }
+ * @returns { Promise<{}> }
+ */
+
+export const updateCoupon = async (formData, code) => {
+  try {
+    let { data } = await axios.patch(`${host}/admin/coupon/${code}`, formData);
+    return data;
+  } catch (error) {
+    console.log(`%c ${error}`, "color: red");
+  }
+};
+
+/**
+ * @param { code }
+ * @type { number }
+ */
+
+export const deleteCoupon = async (code, setShowModal) => {
+  try {
+    let { data } = await axios.delete(`${host}/admin/coupon/${code}`);
+    if (data.status) setShowModal(true);
+    else setShowModal(false);
+  } catch (error) {
+    setShowModal(false);
+    console.log(`%c ${error}`, "color: red");
+  }
+};
