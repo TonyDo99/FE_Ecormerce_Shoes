@@ -1,11 +1,10 @@
-import { io } from "socket.io-client";
+import { Manager } from "socket.io-client";
 
-export const socket = io("ws://localhost:5000", {
-  reconnectionDelayMax: 10000,
+const manager = new Manager("ws://localhost:5000", {
+  reconnectionDelay: 30000,
   autoConnect: true,
 });
 
-export const dashboard = io("ws://localhost:5000/admin", {
-  reconnectionDelayMax: 10000,
-  autoConnect: true,
-});
+export const io_admin = manager.socket("/admin");
+
+export const io_client = manager.socket("/client");
