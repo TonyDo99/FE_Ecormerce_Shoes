@@ -38,9 +38,7 @@ const validationSchema = Yup.object().shape({
 
 const ShippingAddress = () => {
   const [info, setInfo] = useState("");
-  let [paid, setPaid] = useState({
-    status: undefined,
-  });
+  let [paid_status, setPaid_Status] = useState(undefined);
   const [response, total_price] = useContext(ResponseContext);
   useEffect(() => {
     (async () => {
@@ -222,14 +220,14 @@ const ShippingAddress = () => {
         <button
           type="submit"
           className="w-full py-2 px-4 sm:py-2 sm:px-10 border-2 hover:border-opacity-60 rounded-full shadow-all-rounded transition-colors duration-500 hover:border-[#5048e5] cursor-pointer max-w-max"
-          onClick={() => payment(response, total_price, setPaid)}
+          onClick={() => payment(response, total_price, setPaid_Status)}
         >
           <p className="w-full text-center font-Inter font-semibold text-[#5048e5]">
             Check out
           </p>
         </button>
       </div>
-      {paid.status !== undefined && <ModalPayment status={paid.status} />}
+      {paid_status !== undefined && <ModalPayment status={paid_status} />}
     </div>
   );
 };

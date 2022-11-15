@@ -106,21 +106,22 @@ export const applyCoupon = async (code, setResponse, setShowModal) => {
   }
 };
 
-export const payment = async ({ totalHasVoucher }, total_price, setPaid) => {
+export const payment = async (
+  { totalHasVoucher },
+  total_price,
+  setPaid_Status
+) => {
   try {
     if (total_price === 0) throw new Error("Cart of customer is empty !");
-
     let { data } = await axios.post(`${host}/payment`, {
       totalHasVoucher: totalHasVoucher ?? total_price,
     });
-    setPaid(data);
+    setPaid_Status(data.status);
   } catch (error) {
-    setPaid({
-      status: false,
-      message: error,
-    });
+    setPaid_Status(false);
     console.log(
       `%c "🚀 ~ file: clientAPI.jsx ~ line 82 ~ applyCoupon ~ error" ${error}`,
+      "color: red",
       "color: red"
     );
   }

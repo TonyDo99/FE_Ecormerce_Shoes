@@ -26,7 +26,7 @@ import { AccountSite } from "./Account";
 import { CouponSite, InsertCoupon, UpdateCoupon } from "./Coupon";
 import { fetchUser } from "../../api/adminAPI";
 
-import { dashboard } from "../../socket.io/config";
+import { io_admin } from "../../socket.io/config";
 
 const axios = require("axios").default;
 
@@ -322,13 +322,20 @@ function Chart() {
 // Component thống kê cho Dashboard site
 function TotalCalculate() {
   let [totalCus, setTotalCus] = useState({});
-
   useEffect(() => {
-    dashboard.emit("dashboard:statistical");
-    dashboard.on("statistical", (data) => {
-      setTotalCus(data);
+    setInterval(() => {
+      io_admin.emit("dashboard:statistical");
+      io_admin.on("statistical", (data) => {
+        setTotalCus(data);
+      });
+    }, 3000);
+    io_admin.on("notification", (data) => {
+      console.log(
+        "🚀 ~ file: Dashboard.jsx ~ line 333 ~ io_admin.on ~ data",
+        data
+      );
     });
-  }, [totalCus]);
+  }, []);
 
   return (
     <div className="flex flex-col sm:flex-row flex-wrap flex-grow">

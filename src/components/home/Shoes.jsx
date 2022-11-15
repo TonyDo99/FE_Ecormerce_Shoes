@@ -48,15 +48,31 @@ function ShoesComponent({ ...props }) {
   return (
     <div className="w-full md:w-1/2 lg:1/3 xl:w-1/4 md:h-max gap-y-5 px-5 sm:px-0">
       <Link to={`/categories/${props._id}`}>
-        <article className="transition-transform duration-500 hover:-translate-y-3 cursor-pointer w-full sm:w-4/5 font-Public">
+        <article className="relative transition-transform duration-500 hover:-translate-y-3 cursor-pointer w-full sm:w-4/5 font-Public rounded-lg">
           <img
-            className="h-[270px] object-cover rounded-t-xl w-max"
+            className="h-[270px] object-cover rounded-t-xl w-full md:w-max"
             src={props.url}
             alt="Nike Air Force 1 NDESTRUKT"
           />
+          <ul className="absolute list-none inline-flex top-0 left-0 text-xs text-white font-medium">
+            <li
+              className={
+                (props.status === "Sale"
+                  ? "bg-yellow-500"
+                  : props.status === "New"
+                  ? "bg-blue-500"
+                  : "bg-pink_f5548e") +
+                " rounded-tl-xl flex justify-center items-center w-16 h-6  mr-2"
+              }
+            >
+              {props.status}
+            </li>
+          </ul>
           <div className="w-full py-6 border-b-2 drop-shadow-lg rounded-b-lg hover:text-gray_7a82a6 px-4 sm:px-1">
             <div className="flex justify-between items-center text-sm font-semibold text-bg_272b41 ">
-              <span>{props.name}</span>
+              <span className="whitespace-nowrap overflow-hidden overflow-ellipsis w-48 md:w-44">
+                {props.name}
+              </span>
               <span>{props.quantity}</span>
             </div>
             <div className="flex justify-between items-center pt-3 font-semibold text-bg_272b41">

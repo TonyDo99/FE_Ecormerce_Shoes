@@ -134,7 +134,7 @@ const AboutMe = (id) => {
                     }}
                   />
                 </div>
-                <span className="pl-3">25 East Valley Road, Michigan</span>
+                <span className="pl-3">Hồ Chí Minh City</span>
               </span>
               <span className="inline-flex items-center">
                 <div className="p-2 rounded-full bg-gray_7a82a6 bg-opacity-10">
@@ -145,7 +145,7 @@ const AboutMe = (id) => {
                     }}
                   />
                 </div>
-                <span className="pl-3">(213) 995-7799</span>
+                <span className="pl-3">+84 826 240 270</span>
               </span>
               <span className="inline-flex items-center">
                 <div className="p-2 rounded-full bg-gray_7a82a6 bg-opacity-10">
