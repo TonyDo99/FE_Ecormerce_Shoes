@@ -1,9 +1,6 @@
 module.exports = {
   mode: "jit",
-  purge: [
-    "../React-shoes-web/public/**/*.html",
-    "../React-shoes-web/src/**/*.{js,jsx,ts,tsx,vue}",
-  ],
+  purge: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
   content: ["./src/**/*.{html,js}"],
   darkMode: false,
   theme: {
