@@ -323,18 +323,16 @@ function Chart() {
 function TotalCalculate() {
   let [totalCus, setTotalCus] = useState({});
   useEffect(() => {
-    setInterval(() => {
+    let id = setInterval(() => {
       io_admin.emit("dashboard:statistical");
       io_admin.on("statistical", (data) => {
         setTotalCus(data);
       });
     }, 3000);
-    io_admin.on("notification", (data) => {
-      console.log(
-        "🚀 ~ file: Dashboard.jsx ~ line 333 ~ io_admin.on ~ data",
-        data
-      );
-    });
+
+    return () => {
+      clearInterval(id);
+    };
   }, []);
 
   return (
@@ -470,6 +468,17 @@ function DashboardSite() {
 
 // AdminArticle
 function AdminArticle({ account }) {
+  let [notifications, setNotifications] = useState({});
+  useEffect(() => {
+    io_admin.on("notification", (data) => {
+      setNotifications(data);
+    });
+    console.log(
+      "🚀 ~ file: Dashboard.jsx ~ line 472 ~ AdminArticle ~ notifications",
+      notifications
+    );
+  }, [notifications]);
+
   return (
     <div className="col-start-1 col-end-3 lg:col-start-2 lg:col-end-3">
       <div className="px-5">
