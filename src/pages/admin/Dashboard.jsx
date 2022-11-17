@@ -324,6 +324,8 @@ function TotalCalculate() {
   let [totalCus, setTotalCus] = useState({});
   useEffect(() => {
     let id = setInterval(() => {
+      io_admin.connect();
+      io_admin.open();
       io_admin.emit("dashboard:statistical");
       io_admin.on("statistical", (data) => {
         setTotalCus(data);
@@ -332,6 +334,8 @@ function TotalCalculate() {
 
     return () => {
       clearInterval(id);
+      io_admin.disconnect();
+      io_admin.close();
     };
   }, []);
 
@@ -470,6 +474,8 @@ function DashboardSite() {
 function AdminArticle({ account }) {
   let [notifications, setNotifications] = useState({});
   useEffect(() => {
+    io_admin.connect();
+    io_admin.open();
     io_admin.on("notification", (data) => {
       setNotifications(data);
     });
