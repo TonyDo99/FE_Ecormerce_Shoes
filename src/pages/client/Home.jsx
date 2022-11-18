@@ -156,7 +156,7 @@ export function Nav() {
               <span
                 className={
                   countCart?.length && countCart[0]?.cart?.length > 0
-                    ? "bg-[#ffb020] absolute top-0 right-0 p-1 rounded-full"
+                    ? "bg-[#ffb020] absolute top-0 right-0 p-1 rounded-full animate-ping"
                     : ""
                 }
               ></span>

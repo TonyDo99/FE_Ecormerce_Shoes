@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { Redirect } from "react-router-dom";
 import { FadingBalls } from "react-cssfx-loading/lib";
 
@@ -27,6 +27,7 @@ import { CouponSite, InsertCoupon, UpdateCoupon } from "./Coupon";
 import { fetchUser } from "../../api/adminAPI";
 
 import { io_admin } from "../../socket.io/config";
+import { Popover, Transition } from "@headlessui/react";
 
 const axios = require("axios").default;
 
@@ -324,8 +325,6 @@ function TotalCalculate() {
   let [totalCus, setTotalCus] = useState({});
   useEffect(() => {
     let id = setInterval(() => {
-      io_admin.connect();
-      io_admin.open();
       io_admin.emit("dashboard:statistical");
       io_admin.on("statistical", (data) => {
         setTotalCus(data);
@@ -334,8 +333,6 @@ function TotalCalculate() {
 
     return () => {
       clearInterval(id);
-      io_admin.disconnect();
-      io_admin.close();
     };
   }, []);
 
@@ -474,17 +471,28 @@ function DashboardSite() {
 function AdminArticle({ account }) {
   let [notifications, setNotifications] = useState({});
   useEffect(() => {
-    io_admin.connect();
-    io_admin.open();
     io_admin.on("notification", (data) => {
       setNotifications(data);
     });
-    console.log(
-      "🚀 ~ file: Dashboard.jsx ~ line 472 ~ AdminArticle ~ notifications",
-      notifications
-    );
   }, [notifications]);
 
+  const solutions = [
+    {
+      name: "Insights",
+      description: "Measure actions your users take",
+      href: "##",
+    },
+    {
+      name: "Automations",
+      description: "Create your own targeted content",
+      href: "##",
+    },
+    {
+      name: "Reports",
+      description: "Keep track of your growth",
+      href: "##",
+    },
+  ];
   return (
     <div className="col-start-1 col-end-3 lg:col-start-2 lg:col-end-3">
       <div className="px-5">
@@ -512,16 +520,73 @@ function AdminArticle({ account }) {
                 }}
               />
             </button>
-            <button className="p-3 rounded-full hover:bg-[#c8cdd3] hover:bg-opacity-50">
-              <BiBell
-                size={20}
-                style={{
-                  color: "black",
-                  alignSelf: "center",
-                  width: "100%",
-                }}
-              />
-            </button>
+            <Popover className="relative">
+              <Popover.Button className="relative p-3 rounded-full hover:bg-[#c8cdd3] hover:bg-opacity-50">
+                <BiBell
+                  className={
+                    Object.keys(notifications).length ? "animate-pulse" : ""
+                  }
+                  size={20}
+                  style={{
+                    color: `${
+                      Object.keys(notifications).length ? "#903af9" : "black"
+                    }`,
+                    alignSelf: "center",
+                    width: "100%",
+                  }}
+                />
+              </Popover.Button>
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-200"
+                enterFrom="opacity-0 translate-y-1"
+                enterTo="opacity-100 translate-y-0"
+                leave="transition ease-in duration-150"
+                leaveFrom="opacity-100 translate-y-0"
+                leaveTo="opacity-0 translate-y-1"
+              >
+                <Popover.Panel className="absolute left-0 z-10 mt-3 w-screen max-w-sm -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl">
+                  <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                    <div className="relative grid gap-8 bg-white p-7 ">
+                      {solutions.map((item) => (
+                        <a
+                          key={item.name}
+                          href={item.href}
+                          className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                        >
+                          {/* <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
+                            <item.icon aria-hidden="true" />
+                          </div> */}
+                          <div className="ml-4">
+                            <p className="text-sm font-medium text-gray-900">
+                              {item.name}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {item.description}
+                            </p>
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                    <div className="bg-gray-50 p-4">
+                      <a
+                        href="##"
+                        className="flow-root rounded-md px-2 py-2 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                      >
+                        <span className="flex items-center">
+                          <span className="text-sm font-medium text-gray-900">
+                            Documentation
+                          </span>
+                        </span>
+                        <span className="block text-sm text-gray-500">
+                          Start integrating products and tools
+                        </span>
+                      </a>
+                    </div>
+                  </div>
+                </Popover.Panel>
+              </Transition>
+            </Popover>
             <div className="hover:ring hover:ring-[#6366f1] hover:rounded-full hover:ring-opacity-60 cursor-pointer w-10 h-10 flex justify-center">
               <img
                 className="rounded-full"
