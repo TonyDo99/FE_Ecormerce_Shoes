@@ -1,10 +1,16 @@
 import { Manager } from "socket.io-client";
 
 const manager = new Manager("ws://localhost:5000", {
-  reconnectionDelay: 30000,
-  autoConnect: true,
+  reconnection: true,
+  reconnectionDelay: 1000,
 });
 
-export const io_admin = manager.socket("/admin");
+manager.open((err) => {
+  if (err)
+    console.log("🚀 ~ file: config.jsx ~ line 6 ~ manager.open ~ err", err);
+});
 
-export const io_client = manager.socket("/client");
+const io_admin = manager.socket("/admin");
+
+// const io_client = manager.socket("/client");
+export { io_admin };
