@@ -115,3 +115,39 @@ export const deleteCoupon = async (code, setShowModal) => {
     console.log(`%c ${error}`, "color: red");
   }
 };
+
+/**
+ * @param {*} idProducts
+ * @type { string }
+ */
+
+export const getDetailProduct = async (idProducts) => {
+  try {
+    let { data } = await axios.get(`${host}/categories/${idProducts}`);
+    return data;
+  } catch (error) {
+    console.log(`%c ${error}`, "color: red");
+  }
+};
+
+/**
+ * @param {idProducts, _id, setShowModal}
+ * @type {FormData, string, function}
+ */
+
+export const updateProduct = async (formData, _id, setShowModal) => {
+  try {
+    let { data } = await axios.patch(
+      `${host}/admin/updateProduct/${_id}`,
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
+    if (data.status) setShowModal(true);
+    else setShowModal(false);
+  } catch (error) {
+    setShowModal(false);
+    console.log(`%c ${error}`, "color: red");
+  }
+};
