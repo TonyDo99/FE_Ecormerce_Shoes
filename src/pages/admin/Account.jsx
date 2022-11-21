@@ -30,7 +30,7 @@ let validationSchema = Yup.object().shape({
   phone: Yup.string()
     .matches("^[0-9]+", "You can only type number")
     .max(11, "Only less than 10 number"),
-  passwo_: Yup.string(),
+  passwo_: Yup.string().required("* Password cannot be blank"),
   avatar: Yup.mixed(),
   address: Yup.string(),
 });
@@ -55,23 +55,34 @@ function AccountSite() {
       const formData = new FormData();
       try {
         // Upload avatar to firebase storage
-        const storageRef = ref(storage, `${values.avatar.name}`);
-        await uploadBytes(storageRef, values.avatar).then(() => {
-          console.log("Upload image success !");
-        });
+        if (values.avatar) {
+          const storageRef = ref(storage, `${values.avatar.name}`);
+          await uploadBytes(storageRef, values.avatar).then(() => {
+            console.log("Upload image success !");
+          });
 
-        // GET url path image from firebase store
-        let url_path = await getDownloadURL(ref(storage, values.avatar.name));
+          // GET url path image from firebase store
+          let url_path = await getDownloadURL(ref(storage, values.avatar.name));
 
-        formData.append("firstName", values.firstName);
-        formData.append("lastName", values.lastName);
-        formData.append("phone", values.phone);
-        formData.append("avatar", url_path);
-        formData.append("passwo_", values.passwo_);
-        formData.append("address", values.address);
-        let { status, message } = await uploadProduct(formData);
-        if (status) window.alert(message);
-        else window.alert(message);
+          formData.append("firstName", values.firstName);
+          formData.append("lastName", values.lastName);
+          formData.append("phone", values.phone);
+          formData.append("avatar", url_path);
+          formData.append("passwo_", values.passwo_);
+          formData.append("address", values.address);
+          let { status, message } = await uploadProduct(formData);
+          if (status) window.alert(message);
+          else window.alert(message);
+        } else {
+          formData.append("firstName", values.firstName);
+          formData.append("lastName", values.lastName);
+          formData.append("phone", values.phone);
+          formData.append("passwo_", values.passwo_);
+          formData.append("address", values.address);
+          let { status, message } = await uploadProduct(formData);
+          if (status) window.alert(message);
+          else window.alert(message);
+        }
       } catch (err) {
         console.log(`%c ${err}`, "color: red");
       }
