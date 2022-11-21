@@ -409,18 +409,12 @@ function InsertCoupon() {
   );
 }
 
-function UpdateCoupon(props) {
+function UpdateCoupon({ _code }) {
   let [now, setNow] = useState(new Date());
   let [select, setSelect] = useState(false);
   let [loading, setLoading] = useState(false);
   let [showModal, setShowModal] = useState(undefined);
   let [coupon, setCoupon] = useState({});
-
-  const {
-    match: {
-      params: { _code },
-    },
-  } = props;
 
   useEffect(() => {
     (async () => {
