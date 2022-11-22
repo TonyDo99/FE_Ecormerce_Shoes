@@ -489,37 +489,37 @@ function UpdateCoupon({ _code }) {
     },
   ];
 
-  // let validationSchema = Yup.object().shape({
-  //   shipping_discount: Yup.number().required("Code field can't be blank *"),
-  //   logo: Yup.mixed().required("Please select your logo of coupon *"),
-  // });
-
-  const initialValues = {
-    code: coupon.code,
-    type: coupon.type,
-    shipping_discount: coupon.shipping_discount,
-    percent_discount: coupon.percent_discount,
-    logo: coupon.logo,
-  };
+  let validationSchema = Yup.object().shape({
+    shipping_discount: Yup.number().required("Code field can't be blank *"),
+    logo: Yup.mixed().required("Please select your logo of coupon *"),
+  });
 
   const formik = useFormik({
-    initialValues,
+    initialValues: {
+      code: coupon?.code || "",
+      type: coupon?.type || "",
+      shipping_discount: coupon?.shipping_discount || "",
+      percent_discount: coupon?.percent_discount || "",
+      logo: coupon?.logo || "",
+    },
     // POST HTTP lên cho server;
     onSubmit: async (values) => {
       setLoading(true);
       const formData = new FormData();
       try {
-        // Upload avatar to firebase storage
-        const storageRef = ref(storage, `${values.logo.name}`);
-        await uploadBytes(storageRef, values.logo).then(() => {
-          console.log("Upload logo success !");
-        });
-        console.log(coupon);
-        let url_path = await getDownloadURL(ref(storage, values.logo.name));
-        formData.append("logo", url_path);
-        formData.append("type", coupon.type);
-        formData.append("shipping_discount", coupon.shipping_discount);
-        formData.append("percent_discount", coupon.percent_discount);
+        if (values.logo.name) {
+          // Upload avatar to firebase storage
+          const storageRef = ref(storage, `${values.logo.name}`);
+          await uploadBytes(storageRef, values.logo);
+          let url_path = await getDownloadURL(ref(storage, values.logo.name));
+          formData.append("logo", url_path);
+        } else {
+          formData.append("logo", values.logo);
+        }
+
+        formData.append("type", values.type);
+        formData.append("shipping_discount", values.shipping_discount);
+        formData.append("percent_discount", values.percent_discount);
         let { status } = await updateCoupon(formData, _code);
         setShowModal(status);
         setLoading(false);
@@ -527,7 +527,8 @@ function UpdateCoupon({ _code }) {
         console.log(`%c ${err}`, "color: red");
       }
     },
-    // validationSchema,
+    validationSchema,
+    enableReinitialize: true,
   });
 
   // Change select type in formdata
@@ -620,7 +621,7 @@ function UpdateCoupon({ _code }) {
                         autoComplete="code"
                         className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                         disabled={true}
-                        value={coupon.code}
+                        value={formik.values.code}
                       />
                       {formik.touched.code && formik.errors.code ? (
                         <p className="animate-pulse text-[#f2566e] text-sm md:text-base">
@@ -741,17 +742,15 @@ function UpdateCoupon({ _code }) {
                         id="shipping_discount"
                         autoComplete="shipping_discount"
                         className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                        onChange={(e) =>
-                          setCoupon({ shipping_discount: e.target.value })
-                        }
-                        value={coupon.shipping_discount}
+                        onChange={formik.handleChange}
+                        value={formik.values.shipping_discount}
                       />
-                      {/* {formik.touched.shipping_discount &&
+                      {formik.touched.shipping_discount &&
                       formik.errors.shipping_discount ? (
                         <p className="animate-pulse text-[#f2566e] text-sm md:text-base">
                           {formik.errors.shipping_discount}
                         </p>
-                      ) : null} */}
+                      ) : null}
                     </div>
 
                     <div className="col-span-6 sm:col-span-3">
@@ -769,7 +768,7 @@ function UpdateCoupon({ _code }) {
                         className="mt-1 transition-colors duration-500  focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                         disabled={true}
                         onChange={formik.handleChange}
-                        value={coupon.percent_discount}
+                        value={formik.values.percent_discount}
                       />
                       {formik.touched.percent_discount &&
                       formik.errors.percent_discount ? (
