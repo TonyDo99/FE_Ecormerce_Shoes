@@ -20,7 +20,7 @@ import {
 import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
 
 // Site
-import { InsertProduct, ProductsSite } from "./Products";
+import { InsertProduct, ProductsSite, UpdateProduct } from "./Products";
 import { CustomersSite } from "./Customers";
 import { AccountSite } from "./Account";
 import { CouponSite, InsertCoupon, UpdateCoupon } from "./Coupon";
@@ -585,16 +585,20 @@ function AdminArticle({ account }) {
         <Route exact path="/dashboard/account" component={AccountSite} />
         <Route exact path="/dashboard/customers" component={CustomersSite} />
         <Route exact path="/dashboard/products" component={ProductsSite} />
-        <Route exact path="/dashboard/coupon" component={CouponSite} />
-        <Route exact path="/dashboard/coupon/insert" component={InsertCoupon} />
         <Route
           exact
-          path="/dashboard/products/insert"
+          path="/dashboard/product/insert"
           component={InsertProduct}
         />
         <Route
+          path="/dashboard/product/:_id"
+          render={({ match }) => <UpdateProduct _id={match.params._id} />}
+        />
+        <Route exact path="/dashboard/coupon" component={CouponSite} />
+        <Route exact path="/dashboard/coupon/insert" component={InsertCoupon} />
+        <Route
           path="/dashboard/coupon/:_code"
-          render={(props) => <UpdateCoupon {...props} />}
+          render={({ match }) => <UpdateCoupon _code={match.params._code} />}
         />
       </Switch>
     </div>
