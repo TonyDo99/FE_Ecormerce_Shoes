@@ -469,32 +469,15 @@ function DashboardSite() {
 
 // AdminArticle
 function AdminArticle({ account }) {
-  let [notifications, setNotifications] = useState({});
+  let [notifications, setNotifications] = useState([]);
   useEffect(() => {
     io_admin.on("notification", (data) => {
-      setNotifications(data);
+      setNotifications((notifications) => [...notifications, data]);
     });
   }, [notifications]);
 
-  const solutions = [
-    {
-      name: "Insights",
-      description: "Measure actions your users take",
-      href: "##",
-    },
-    {
-      name: "Automations",
-      description: "Create your own targeted content",
-      href: "##",
-    },
-    {
-      name: "Reports",
-      description: "Keep track of your growth",
-      href: "##",
-    },
-  ];
   return (
-    <div className="col-start-1 col-end-3 lg:col-start-2 lg:col-end-3">
+    <div className="relative col-start-1 col-end-3 lg:col-start-2 lg:col-end-3">
       <div className="px-5">
         <nav className="flex justify-between items-center min-h-[64px]">
           <svg
@@ -520,8 +503,8 @@ function AdminArticle({ account }) {
                 }}
               />
             </button>
-            <Popover className="relative">
-              <Popover.Button className="relative p-3 rounded-full hover:bg-[#c8cdd3] hover:bg-opacity-50">
+            <Popover>
+              <Popover.Button className="p-3 rounded-full hover:bg-[#c8cdd3] hover:bg-opacity-50">
                 <BiBell
                   className={
                     Object.keys(notifications).length ? "animate-pulse" : ""
@@ -545,13 +528,12 @@ function AdminArticle({ account }) {
                 leaveFrom="opacity-100 translate-y-0"
                 leaveTo="opacity-0 translate-y-1"
               >
-                <Popover.Panel className="absolute left-0 z-10 mt-3 w-screen max-w-sm -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl">
+                <Popover.Panel className="absolute z-2 mt-3 right-0 w-screen max-w-sm  transform px-4 sm:px-0 lg:max-w-xl">
                   <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                     <div className="relative grid gap-8 bg-white p-7 ">
-                      {solutions.map((item) => (
-                        <a
-                          key={item.name}
-                          href={item.href}
+                      {notifications?.map((item, index) => (
+                        <div
+                          key={index}
                           className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                         >
                           {/* <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
@@ -559,13 +541,13 @@ function AdminArticle({ account }) {
                           </div> */}
                           <div className="ml-4">
                             <p className="text-sm font-medium text-gray-900">
-                              {item.name}
+                              Payment notification
                             </p>
                             <p className="text-sm text-gray-500">
-                              {item.description}
+                              {item.message}
                             </p>
                           </div>
-                        </a>
+                        </div>
                       ))}
                     </div>
                     <div className="bg-gray-50 p-4">
