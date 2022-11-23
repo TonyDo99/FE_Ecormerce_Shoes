@@ -474,6 +474,8 @@ function AdminArticle({ account }) {
     io_admin.on("notification", (data) => {
       setNotifications((notifications) => [...notifications, data]);
     });
+
+    return () => io_admin.off();
   }, [notifications]);
 
   return (
