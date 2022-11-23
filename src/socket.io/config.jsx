@@ -12,5 +12,5 @@ manager.open((err) => {
 
 const io_admin = manager.socket("/admin");
 
-// const io_client = manager.socket("/client");
-export { io_admin };
+const io_client = manager.socket("/client");
+export { io_admin, io_client };

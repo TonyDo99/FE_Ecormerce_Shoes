@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, Fragment } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { Swiper, SwiperSlide, useSwiper } from "swiper/react/swiper-react";
 import { Autoplay, Pagination } from "swiper";
@@ -36,6 +36,8 @@ import paymentIcon from "../../img/payment.gif";
 import deliveryIcon from "../../img/delivery.gif";
 import prev from "../../img/prev.png";
 import next from "../../img/next.png";
+import { Popover, Transition } from "@headlessui/react";
+import { io_client } from "../../socket.io/config";
 
 const axios = require("axios").default;
 
@@ -44,6 +46,19 @@ export function Nav() {
   const [showMenuMobile, setShowMenuMobile] = useState(false);
   const [showCart, setShowCart] = useState(false);
   const countCart = useContext(UsersContext);
+  let [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    io_client.on("notification", (data) => {
+      setNotifications((notifications) => [...notifications, data]);
+    });
+
+    return () => io_client.off();
+  }, [notifications]);
+  console.log(
+    "🚀 ~ file: Home.jsx ~ line 56 ~ Nav ~ notifications",
+    notifications
+  );
   return (
     <nav className="sm:sticky z-2 top-0 bg-gray-800">
       <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
@@ -161,29 +176,87 @@ export function Nav() {
                 }
               ></span>
             </button>
-
-            <button
-              type="button"
-              className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
-            >
-              <span className="sr-only">View notifications</span>
-              <svg
-                className="h-6 w-6"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
+            <Popover>
+              <Popover.Button
+                type="button"
+                className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                />
-              </svg>
-            </button>
+                <span className="sr-only">View notifications</span>
 
+                <svg
+                  className={
+                    Object.keys(notifications).length
+                      ? "animate-pulse h-6 w-6"
+                      : "h-6 w-6"
+                  }
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke={
+                    Object.keys(notifications).length
+                      ? "#fa8b0c"
+                      : "currentColor"
+                  }
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                  />
+                </svg>
+              </Popover.Button>
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-200"
+                enterFrom="opacity-0 translate-y-1"
+                enterTo="opacity-100 translate-y-0"
+                leave="transition ease-in duration-150"
+                leaveFrom="opacity-100 translate-y-0"
+                leaveTo="opacity-0 translate-y-1"
+              >
+                <Popover.Panel className="absolute z-2 mt-3 right-0 w-screen max-w-sm  transform px-4 sm:px-0 lg:max-w-xl">
+                  <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                    <div className="relative grid gap-8 bg-white p-7 ">
+                      {notifications?.map((item, index) => (
+                        <div
+                          key={index}
+                          className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                        >
+                          {/* <div className="flex h-10 w-10 shrink-0 items-center justify-center text-white sm:h-12 sm:w-12">
+                            <item.icon aria-hidden="true" />
+                          </div> */}
+                          <div className="ml-4">
+                            <p className="text-sm font-medium text-gray-900">
+                              Payment notification
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {item.message}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="bg-gray-50 p-4">
+                      <a
+                        href="##"
+                        className="flow-root rounded-md px-2 py-2 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                      >
+                        <span className="flex items-center">
+                          <span className="text-sm font-medium text-gray-900">
+                            Documentation
+                          </span>
+                        </span>
+                        <span className="block text-sm text-gray-500">
+                          Start integrating products and tools
+                        </span>
+                      </a>
+                    </div>
+                  </div>
+                </Popover.Panel>
+              </Transition>
+            </Popover>
             <div className="ml-3 relative">
               <div onClick={() => setStatus(!status)}>
                 <button
