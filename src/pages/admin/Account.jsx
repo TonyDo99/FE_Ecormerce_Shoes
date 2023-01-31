@@ -100,7 +100,7 @@ function AccountSite() {
               <div className="w-24 h-24">
                 <img
                   className="rounded-full w-full h-full"
-                  src={account.avatar}
+                  src={account?.avatar}
                   alt="Avatar"
                 />
               </div>
@@ -164,7 +164,7 @@ function AccountSite() {
                         name="firstName"
                         id="first-name"
                         autoComplete="first-name"
-                        defaultValue={account.firstName}
+                        defaultValue={account?.firstName}
                         className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                         onChange={formik.handleChange}
                       />
@@ -187,7 +187,7 @@ function AccountSite() {
                         name="lastName"
                         id="last-name"
                         autoComplete="family-name"
-                        defaultValue={account.lastName}
+                        defaultValue={account?.lastName}
                         className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                         onChange={formik.handleChange}
                       />
@@ -210,7 +210,7 @@ function AccountSite() {
                         name="email"
                         id="email-address"
                         autoComplete="email"
-                        defaultValue={account.email}
+                        defaultValue={account?.email}
                         className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                         disabled={true}
                       />
@@ -228,7 +228,7 @@ function AccountSite() {
                         name="phone"
                         id="phone"
                         autoComplete="phone"
-                        defaultValue={account.phone}
+                        defaultValue={account?.phone}
                         className="mt-1 transition-colors duration-500  focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                         onChange={formik.handleChange}
                       />
@@ -273,7 +273,7 @@ function AccountSite() {
                         name="address"
                         id="address"
                         autoComplete="address"
-                        defaultValue={account.address}
+                        defaultValue={account?.address}
                         className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                         onChange={formik.handleChange}
                       />

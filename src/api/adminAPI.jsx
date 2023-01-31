@@ -66,6 +66,7 @@ export const getCoupon = async () => {
     return data;
   } catch (error) {
     console.log(`%c ${error}`, "color: red");
+    return [];
   }
 };
 

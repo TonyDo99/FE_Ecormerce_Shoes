@@ -611,20 +611,18 @@ function Dashboard() {
   const tokenHeader = localStorage.getItem("token");
   axios.defaults.headers.common["Authorization"] = "Bearer " + tokenHeader;
 
-  useEffect(() => {
-    (async () => {
-      setAccount(await fetchUser());
-    })();
-    setId(Math.random());
-  }, []);
+  // useEffect(() => {
+  //   (async () => {
+  //     setAccount(await fetchUser());
+  //   })();
+  //   setId(Math.random());
+  // }, []);
 
-  return tokenHeader ? (
+  return (
     <div className="grid grid-flow-row sm:grid-flow-col auto-cols-fr sm:auto-cols-grid-admin h-screen">
       <AdminSidebar id={id} />
       <AdminArticle account={account} />
     </div>
-  ) : (
-    <Redirect to="/login" />
   );
 }
 

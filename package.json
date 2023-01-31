@@ -32,10 +32,10 @@
     "yup": "^0.32.11"
   },
   "scripts": {
-    "start": "cross-env BROWSER=firefox craco start",
-    "build": "cross-env BROWSER=firefox craco build",
-    "test": "cross-env BROWSER=firefox test",
-    "eject": "cross-env BROWSER=firefox react-scripts eject"
+    "start": "craco --openssl-legacy-provider start",
+    "build": "craco build",
+    "test": "craco test",
+    "eject": "craco eject"
   },
   "eslintConfig": {
     "extends": [
@@ -56,8 +56,8 @@
     ]
   },
   "devDependencies": {
-    "autoprefixer": "^9.8.8",
-    "postcss": "^7.0.39",
+    "autoprefixer": "^9",
+    "postcss": "^7",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17"
   }
 }

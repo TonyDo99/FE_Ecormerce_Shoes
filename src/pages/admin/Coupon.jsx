@@ -832,7 +832,7 @@ function CouponSite() {
   useEffect(() => {
     (async () => {
       let { coupons } = await getCoupon();
-      setCouponList(coupons);
+      setCouponList(coupons || []);
       setLoading(false);
     })();
   }, []);
